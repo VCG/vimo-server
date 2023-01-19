@@ -4,7 +4,7 @@ def get_random(motif):
     from utils.data_conversion import nodes_and_edges_to_networkx
     """
     Gets the expected number of occurrences of a given motif in a random network.
-    @param motif: motif
+    @param motif: motif dictionary
     @return: expected occurrences of the motif in a random network
     """
     graph = nodes_and_edges_to_networkx(motif)
@@ -24,8 +24,7 @@ def get_random(motif):
 
 def get_relative(motif):
     """
-    @param motif:
-    @return:
+    Returns the relative count of a given motif in the dataset.
     """
 
     absolute_count = int(get_absolute(motif))
