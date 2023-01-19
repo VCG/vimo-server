@@ -33,11 +33,14 @@ def four_zero_one():
 @app.post("/search")
 async def search_motif(req: Request):
     req = await req.json()
+    data_server = req['data_server']
+    data_version = req['data_version']
     motif = req['motif']
     lim = req['lim']
     token = req['token']
+
     try:
-        return motif_search.search_hemibrain_motif(motif, lim, token)
+        return motif_search.search_hemibrain_motif(data_server, data_version, token, motif, lim)
     except HTTPError as e:
         raise HTTPException(status_code=e.response.status_code, detail=json.loads(e.response.text))
     except Exception as e:

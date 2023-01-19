@@ -1,5 +1,5 @@
 
-def search_hemibrain_motif(data_server, data_version, auth_token, motif_specs, lim):
+def search_hemibrain_motif(data_server, data_version, auth_token, motif, lim):
 
     from dotmotif import Motif
     from dotmotif.executors.NeuPrintExecutor import NeuPrintExecutor
@@ -14,7 +14,7 @@ def search_hemibrain_motif(data_server, data_version, auth_token, motif_specs, l
     """
 
     executor = NeuPrintExecutor(host=data_server, dataset=data_version, token=auth_token)
-    motif_source = nodes_and_edges_to_motif_string(motif_specs)
+    motif_source = nodes_and_edges_to_motif_string(motif)
     motif = Motif(enforce_inequality=True).from_motif(motif_source)
     results = executor.find(motif=motif, limit=lim)
     return results.to_dict('records')
