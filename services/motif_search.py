@@ -1,8 +1,7 @@
-def search_hemibrain_motif(data_server, data_version, auth_token, motif, lim):
+def search_motif(data_server, data_version, auth_token, motif, lim):
     from dotmotif import Motif
     from dotmotif.executors.NeuPrintExecutor import NeuPrintExecutor
     from utils.data_conversion import nodes_and_edges_to_motif_string
-    from neuprint import fetch_all_rois
 
     """ Searches for a motif in the hemibrain dataset.
     @param data_server: URL of the server where data is downloaded from, , e.g. 'https://neuprint.janelia.org/'
@@ -34,8 +33,8 @@ def search_hemibrain_motif(data_server, data_version, auth_token, motif, lim):
     cypher = executor.motif_to_cypher(motif=motif,
                                       count_only=False,
                                       static_entity_labels=_DEFAULT_ENTITY_LABELS,
-                                      json_attributes=fetch_all_rois())
-    
+                                      json_attributes=executor.rois)
+
     # add limit
     if lim:
         cypher += f" LIMIT {lim}"

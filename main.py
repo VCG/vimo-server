@@ -40,7 +40,7 @@ async def search_motif(req: Request):
     token = req['token']
 
     try:
-        return motif_search.search_hemibrain_motif(data_server, data_version, token, motif, lim)
+        return motif_search.search_motif(data_server, data_version, token, motif, lim)
     except HTTPError as e:
         raise HTTPException(status_code=e.response.status_code, detail=json.loads(e.response.text))
     except Exception as e:
