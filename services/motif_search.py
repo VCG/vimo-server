@@ -1,9 +1,8 @@
-
 def search_hemibrain_motif(data_server, data_version, auth_token, motif, lim):
-
     from dotmotif import Motif
     from dotmotif.executors.NeuPrintExecutor import NeuPrintExecutor
     from utils.data_conversion import nodes_and_edges_to_motif_string
+    from neuprint import fetch_all_rois
 
     """ Searches for a motif in the hemibrain dataset.
     @param data_server: URL of the server where data is downloaded from, , e.g. 'https://neuprint.janelia.org/'
@@ -13,8 +12,32 @@ def search_hemibrain_motif(data_server, data_version, auth_token, motif, lim):
     @param lim: limit of the number of results
     """
 
+    _LOOKUP = {
+        "INHIBITS": "ConnectsTo",
+        "EXCITES": "ConnectsTo",
+        "SYNAPSES": "ConnectsTo",
+        "INH": "ConnectsTo",
+        "EXC": "ConnectsTo",
+        "SYN": "ConnectsTo",
+        "DEFAULT": "ConnectsTo",
+    }
+
+    _DEFAULT_ENTITY_LABELS = {
+        "node": "Neuron",
+        "edge": _LOOKUP,
+    }
+
     executor = NeuPrintExecutor(host=data_server, dataset=data_version, token=auth_token)
     motif_source = nodes_and_edges_to_motif_string(motif)
     motif = Motif(enforce_inequality=True).from_motif(motif_source)
-    results = executor.find(motif=motif, limit=lim)
-    return results.to_dict('records')
+
+    cypher = executor.motif_to_cypher(motif=motif,
+                                      count_only=False,
+                                      static_entity_labels=_DEFAULT_ENTITY_LABELS,
+                                      json_attributes=fetch_all_rois())
+    
+    # add limit
+    if lim:
+        cypher += f" LIMIT {lim}"
+
+    return cypher
