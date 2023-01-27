@@ -1,4 +1,4 @@
-def motif_to_cypher(data_server, data_version, auth_token, motif, lim):
+def search_motif(data_server, data_version, auth_token, motif, lim):
     from dotmotif import Motif
     from dotmotif.executors.NeuPrintExecutor import NeuPrintExecutor
     from utils.data_conversion import nodes_and_edges_to_motif_string
