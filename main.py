@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi import HTTPException
+from fastapi import Request
 from starlette.middleware.cors import CORSMiddleware
 
 from services import motif_search, motif_count
@@ -26,8 +27,14 @@ def four_zero_one():
     raise HTTPException(status_code=401, detail="401: Unauthorized")
 
 
-@app.post("/cypher/server={server}&&version={version}&&token={token}&&motif={motif}&&lim={lim}")
-async def search_motif(server: str, version: str, token: str, motif: str, lim: int):
+@app.post("/cypher")
+async def search_motif(req: Request):
+    req = await req.json()
+    server = req['server']
+    version = req['version']
+    motif = req['motif']
+    lim = req['lim']
+    token = req['token']
     return motif_search.motif_to_cypher(server, version, token, motif, lim)
 
 
