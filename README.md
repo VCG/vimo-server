@@ -6,6 +6,7 @@ vimo backend microservice
 
 
 
+### Local development
 Install locally
 ```bash
 cd vimo-server
@@ -20,7 +21,11 @@ Run locally
 python main.py
 ```
 
-Deploy to Google Cloud Run
+### Deployment
+
+1. Set allowed origins in the `ALLOW_ORIGINS` env variable in the [.env](https://github.com/VCG/vimo-server/blob/main/.env) file. 
+This variable determines which origins are allowed to access the API. For example, if you want to allow the origin `https://vimo.janelia.org`, set the variable to `ALLOW_ORIGINS='["https://vimo.janelia.org"]'`. To allow any origin, set the variable to `ALLOW_ORIGINS='["*"]'`.
+2. Deploy to Google Cloud Run
 ```bash
 gcloud run deploy vimo-server --source . --allow-unauthenticated
 ```

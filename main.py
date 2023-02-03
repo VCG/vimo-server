@@ -1,4 +1,5 @@
 import json
+import os
 
 import uvicorn
 from fastapi import FastAPI
@@ -8,11 +9,21 @@ from starlette.middleware.cors import CORSMiddleware
 
 from services import motif_search, motif_count
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 app = FastAPI()
+
+
+# load a env variable from os
+origins = json.loads(os.environ['ALLOW_ORIGINS'])
+
+print(origins)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
