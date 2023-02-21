@@ -11,6 +11,8 @@ from services import motif_search, motif_count
 
 from dotenv import load_dotenv
 
+from utils.data_conversion import parse_node_fields, parse_roi_fields, parse_edge_fields, get_wildcard
+
 load_dotenv()
 
 app = FastAPI()
@@ -48,15 +50,7 @@ async def search_motif(req: Request):
     motif = req['motif']
     lim = req['lim']
     token = req['token']
-    return motif_search.motif_to_cypher(server, version, token, motif, lim)
-
-    try:
-        return motif_search.search_motif(data_server, data_version, token, motif, lim)
-    except HTTPError as e:
-        raise HTTPException(status_code=e.response.status_code, detail=json.loads(e.response.text))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail={'error': str(e)})
-
+    return motif_search.search_motif(server, version, token, motif, lim)
 
 @app.get("/count/motif={motif}")
 def get_motif_count(motif: str):
@@ -68,6 +62,66 @@ def get_relative_motif_count(motif: str):
     return motif_count.get_relative(motif)
 
 
+@app.post("/fetch_node_fields")
+async def fetch_node_fields(req: Request):
+    from neuprint import Client, fetch_custom, fetch_all_rois
+    req = await req.json()
+    server = req['server']
+    version = req['version']
+    token = req['token']
+    client = Client(server, dataset=version, token=token)
+
+    neuron_types_query = 'MATCH(n:Neuron) WHERE EXISTS(n.type) RETURN DISTINCT n.type'
+    neuron_attributes_query = "CALL apoc.meta.data() YIELD label, property, type WITH ['Neuron'] as labels, property, type, label WHERE label in labels AND NOT type IN ['RELATIONSHIP', 'POINT'] RETURN property, type"
+    cell_body_fibers_query = "MATCH(n:Neuron) WHERE n.cellBodyFiber <> 'null' RETURN DISTINCT n.cellBodyFiber"
+
+    neuron_types = fetch_custom(neuron_types_query)['n.type'].values.tolist()
+    neuron_types_with_wildcard = get_wildcard(neuron_types)
+    cell_body_fibers = fetch_custom(cell_body_fibers_query)['n.cellBodyFiber'].values.tolist()
+    print(neuron_types)
+
+    neuron_attributes = fetch_custom(neuron_attributes_query)
+    allRois = fetch_all_rois()
+
+    node_fields = {}
+    for property, type in neuron_attributes.itertuples(index=False):
+        print(property, type)
+        if property == "type":
+            node_fields[property] = parse_node_fields(property, type, neuron_types_with_wildcard)
+        elif property == "cellBodyFiber":
+            node_fields[property] = parse_node_fields(property, type, cell_body_fibers)
+        else:
+            if parse_node_fields(property, type):
+                node_fields[property] = parse_node_fields(property, type)
+
+    for roi in allRois:
+        if roi not in node_fields.keys():
+            node_fields[roi] = parse_roi_fields(roi)
+
+    return node_fields
+
+@app.post("/fetch_edge_fields")
+async def fetch_edge_fields(req: Request):
+    from neuprint import Client, fetch_all_rois
+    req = await req.json()
+    server = req['server']
+    version = req['version']
+    token = req['token']
+    client = Client(server, dataset=version, token=token)
+    allRois = fetch_all_rois()
+
+    edge_fields = {
+        "weight": {
+            "label": "weight",
+            "type": "number",
+            "operators": ["greater", "less", "equal"],
+            "valueSources": ["value"],
+        }
+    }
+    for roi in allRois:
+        edge_fields[roi] = parse_edge_fields(roi)
+
+    return edge_fields
 def start():
     uvicorn.run("main:app", host="127.0.0.1", port=4242, reload=True, log_level="info", app_dir="/")
 
