@@ -78,14 +78,12 @@ async def fetch_node_fields(req: Request):
     neuron_types = fetch_custom(neuron_types_query)['n.type'].values.tolist()
     neuron_types_with_wildcard = get_wildcard(neuron_types)
     cell_body_fibers = fetch_custom(cell_body_fibers_query)['n.cellBodyFiber'].values.tolist()
-    print(neuron_types)
 
     neuron_attributes = fetch_custom(neuron_attributes_query)
     allRois = fetch_all_rois()
 
     node_fields = {}
     for property, type in neuron_attributes.itertuples(index=False):
-        print(property, type)
         if property == "type":
             node_fields[property] = parse_node_fields(property, type, neuron_types_with_wildcard)
         elif property == "cellBodyFiber":

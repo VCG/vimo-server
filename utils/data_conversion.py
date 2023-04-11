@@ -20,7 +20,7 @@ def nodes_and_edges_to_motif_string(motif):
     Converts Query Builder Mongo-esque parameters to dotmotif query format
     """
 
-    print(motif)
+    # print(motif)
     edges = motif['edges']
     nodes = motif['nodes']
     output = "\n "

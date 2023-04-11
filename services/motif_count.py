@@ -60,9 +60,9 @@ def get_absolute(motif):
     # relative path to motif-size-003.pickle
     partial_path = "motif-size-00{}.pickle".format(num_nodes)
     root = Path(__file__).parent.parent
-    print(root)
+    # print(root)
     path = root / "data" / "motifcounts" / "withoutedgecolor" / partial_path
-    print(path)
+    # print(path)
 
     # load motif counts from pickle
     with open(path, 'rb') as f:
