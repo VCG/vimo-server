@@ -1,3 +1,4 @@
+from services import log
 def search_motif(data_server, data_version, auth_token, motif, lim):
     from dotmotif import Motif
     from dotmotif.executors.NeuPrintExecutor import NeuPrintExecutor
@@ -25,6 +26,8 @@ def search_motif(data_server, data_version, auth_token, motif, lim):
         "node": "Neuron",
         "edge": _LOOKUP,
     }
+
+    log.log_sketch(motif, lim)
 
     executor = NeuPrintExecutor(host=data_server, dataset=data_version, token=auth_token)
     motif_source = nodes_and_edges_to_motif_string(motif)
