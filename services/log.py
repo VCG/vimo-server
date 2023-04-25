@@ -8,7 +8,7 @@ if firebase_admin._apps:
     db = firestore.client()
 else:
     # Initialize a new app if the app does not exist
-    cred = credentials.Certificate('../vimo-server-firestore-credentials.json')
+    cred = credentials.Certificate('vimo-server-firestore-credentials.json')
     default_app = firebase_admin.initialize_app(cred)
     db = firestore.client()
 
