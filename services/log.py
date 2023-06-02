@@ -2,17 +2,27 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 import time
+import os
+import sys
 
 db = None
-if firebase_admin._apps:
-    db = firestore.client()
-else:
-    # Initialize a new app if the app does not exist
-    cred = credentials.Certificate('vimo-server-firestore-credentials.json')
-    default_app = firebase_admin.initialize_app(cred)
-    db = firestore.client()
+colletion = None
+credentials_file = 'vimo-server-firestore-credentials.json'
 
-collection = db.collection('sketches')
+if os.environ.get('VIMO_LOGGING') == 'on':
+    if firebase_admin._apps:
+        db = firestore.client()
+    else:
+        # Initialize a new app if the app does not exist
+        try:
+            cred = credentials.Certificate(credentials_file)
+        except FileNotFoundError:
+            print("Could not find credentials file: %s".format(credentials_file))
+            sys.exit(1)
+        default_app = firebase_admin.initialize_app(cred)
+        db = firestore.client()
+
+    collection = db.collection('sketches')
 
 def anonymize_properties(properties):
     if properties is None:
@@ -39,13 +49,15 @@ def anonymize_sketch(sketch):
         })
     # print(res)
     return res
+
 def log_sketch(motif, lim):
-    data = {
-        "timestamp": time.time(),
-        "sketch": anonymize_sketch(motif),
-        "numberOfResults": lim,
-    }
-    try:
-        collection.document().set(data)
-    except Exception as e:
-        print(e)
+    if os.environ.get('VIMO_LOGGING') == 'on':
+        data = {
+            "timestamp": time.time(),
+            "sketch": anonymize_sketch(motif),
+            "numberOfResults": lim,
+        }
+        try:
+            collection.document().set(data)
+        except Exception as e:
+            print(e)
