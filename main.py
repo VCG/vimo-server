@@ -75,12 +75,12 @@ async def fetch_node_fields(req: Request):
     neuron_attributes_query = "MATCH (n: Neuron) UNWIND keys(n) AS property WITH DISTINCT property, apoc.meta.type(n[property]) AS type WHERE type <> 'PointValue' RETURN property, type"
     cell_body_fibers_query = "MATCH(n:Neuron) WHERE n.cellBodyFiber <> 'null' RETURN DISTINCT n.cellBodyFiber"
 
-    neuron_types = fetch_custom(neuron_types_query)['n.type'].values.tolist()
+    neuron_types = client.fetch_custom(neuron_types_query)['n.type'].values.tolist()
     neuron_types_with_wildcard = get_wildcard(neuron_types)
-    cell_body_fibers = fetch_custom(cell_body_fibers_query)['n.cellBodyFiber'].values.tolist()
+    cell_body_fibers = client.fetch_custom(cell_body_fibers_query)['n.cellBodyFiber'].values.tolist()
 
-    neuron_attributes = fetch_custom(neuron_attributes_query)
-    allRois = fetch_all_rois()
+    neuron_attributes = client.fetch_custom(neuron_attributes_query)
+    allRois = fetch_all_rois(client=client)
 
     node_fields = {}
     for property, type in neuron_attributes.itertuples(index=False):
@@ -106,7 +106,7 @@ async def fetch_edge_fields(req: Request):
     version = req['version']
     token = req['token']
     client = Client(server, dataset=version, token=token)
-    allRois = fetch_all_rois()
+    allRois = fetch_all_rois(client=client)
 
     edge_fields = {
         "weight": {
