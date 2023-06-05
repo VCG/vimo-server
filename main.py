@@ -72,7 +72,7 @@ async def fetch_node_fields(req: Request):
     client = Client(server, dataset=version, token=token)
 
     neuron_types_query = 'MATCH(n:Neuron) WHERE EXISTS(n.type) RETURN DISTINCT n.type'
-    neuron_attributes_query = "CALL apoc.meta.data() YIELD label, property, type WITH ['Neuron'] as labels, property, type, label WHERE label in labels AND NOT type IN ['RELATIONSHIP', 'POINT'] RETURN property, type"
+    neuron_attributes_query = "MATCH (n: Neuron) UNWIND keys(n) AS property WITH DISTINCT property, apoc.meta.type(n[property]) AS type WHERE type <> 'PointValue' RETURN property, type"
     cell_body_fibers_query = "MATCH(n:Neuron) WHERE n.cellBodyFiber <> 'null' RETURN DISTINCT n.cellBodyFiber"
 
     neuron_types = fetch_custom(neuron_types_query)['n.type'].values.tolist()
