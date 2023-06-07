@@ -109,7 +109,7 @@ def parse_node_fields(property, type, values=None):
                 "operators": ["equal"]
             }
     else:
-        if property == "type":
+        if property in ["type", "birthtime", "class", "someSide", "entryNerve", "exitNerve", "hemilineage", "longTract", "modality", "origin", "predictedNt", "serialMotif", "somaNeuromere", "somaSide", "subclass", "systematicType", "target"]:
             return {
                 "label": property,
                 "type": "select",
