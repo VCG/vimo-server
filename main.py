@@ -74,11 +74,50 @@ async def fetch_node_fields(req: Request):
     neuron_types_query = 'MATCH(n:Neuron) WHERE EXISTS(n.type) RETURN DISTINCT n.type'
     neuron_attributes_query = "MATCH (n: Neuron) UNWIND keys(n) AS property WITH DISTINCT property, apoc.meta.type(n[property]) AS type WHERE type <> 'PointValue' RETURN property, type"
     cell_body_fibers_query = "MATCH(n:Neuron) WHERE n.cellBodyFiber <> 'null' RETURN DISTINCT n.cellBodyFiber"
-
+    neuron_classes_query = 'MATCH(n:Neuron) WHERE EXISTS(n.class) RETURN DISTINCT n.class'
+    neuron_birthtime_query = 'MATCH(n:Neuron) WHERE EXISTS(n.birthtime) RETURN DISTINCT n.birthtime'
+    neuron_somaSide_query = 'MATCH(n:Neuron) WHERE EXISTS(n.somaSide) RETURN DISTINCT n.somaSide'
+    neuron_entryNerve_query = 'MATCH(n:Neuron) WHERE EXISTS(n.entryNerve) RETURN DISTINCT n.entryNerve'
+    neuron_exitNerve_query = 'MATCH(n:Neuron) WHERE EXISTS(n.exitNerve) RETURN DISTINCT n.exitNerve'
+    neuron_hemilineage_query = 'MATCH(n:Neuron) WHERE EXISTS(n.hemilineage) RETURN DISTINCT n.hemilineage'
+    neuron_longTract_query = 'MATCH(n:Neuron) WHERE EXISTS(n.longTract) RETURN DISTINCT n.longTract'
+    neuron_modality_query = 'MATCH(n:Neuron) WHERE EXISTS(n.modality) RETURN DISTINCT n.modality'
+    neuron_origin_query = 'MATCH(n:Neuron) WHERE EXISTS(n.origin) RETURN DISTINCT n.origin'
+    neuron_predictedNt_query = 'MATCH(n:Neuron) WHERE EXISTS(n.predictedNt) RETURN DISTINCT n.predictedNt'
+    neuron_serialMotif_query = 'MATCH(n:Neuron) WHERE EXISTS(n.serialMotif) RETURN DISTINCT n.serialMotif'
+    neuron_somaNeuromere_query = 'MATCH(n:Neuron) WHERE EXISTS(n.somaNeuromere) RETURN DISTINCT n.somaNeuromere'
+    neuron_somaSide_query = 'MATCH(n:Neuron) WHERE EXISTS(n.somaSide) RETURN DISTINCT n.somaSide'
+    neuron_subclass_query = 'MATCH(n:Neuron) WHERE EXISTS(n.subclass) RETURN DISTINCT n.subclass'
+    neuron_systematicType_query = 'MATCH(n:Neuron) WHERE EXISTS(n.systematicType) RETURN DISTINCT n.systematicType'
+    neuron_target_query = 'MATCH(n:Neuron) WHERE EXISTS(n.target) RETURN DISTINCT n.target'
+    
     neuron_types = client.fetch_custom(neuron_types_query)['n.type'].values.tolist()
     neuron_types_with_wildcard = get_wildcard(neuron_types)
+    neuron_classes = client.fetch_custom(neuron_classes_query)['n.class'].values.tolist()
+    neuron_classes_with_wildcard = get_wildcard(neuron_classes)
+    neuron_birthtimes = client.fetch_custom(neuron_birthtime_query)['n.birthtime'].values.tolist()
+    neuron_somaSides = client.fetch_custom(neuron_somaSide_query)['n.somaSide'].values.tolist()
+    neuron_entryNerve = client.fetch_custom(neuron_entryNerve_query)['n.entryNerve'].values.tolist()
+    neuron_entryNerve_with_wildcard = get_wildcard(neuron_entryNerve)
+    neuron_exitNerve = client.fetch_custom(neuron_exitNerve_query)['n.exitNerve'].values.tolist()
+    neuron_exitNerve_with_wildcard = get_wildcard(neuron_exitNerve)
+    neuron_hemilineage = client.fetch_custom(neuron_hemilineage_query)['n.hemilineage'].values.tolist()
+    neuron_hemilineage_with_wildcard = get_wildcard(neuron_hemilineage)    
+    neuron_longTract = client.fetch_custom(neuron_longTract_query)['n.longTract'].values.tolist()
+    neuron_modality = client.fetch_custom(neuron_modality_query)['n.modality'].values.tolist()
+    neuron_origin = client.fetch_custom(neuron_origin_query)['n.origin'].values.tolist()
+    neuron_origin_with_wildcard = get_wildcard(neuron_origin)
+    neuron_predictedNt = client.fetch_custom(neuron_predictedNt_query)['n.predictedNt'].values.tolist()    
+    neuron_somaSide = client.fetch_custom(neuron_somaSide_query)['n.somaSide'].values.tolist()
+    neuron_subclass = client.fetch_custom(neuron_subclass_query)['n.subclass'].values.tolist()
+    neuron_subclass_with_wildcard = get_wildcard(neuron_subclass)
+    neuron_systematicType = client.fetch_custom(neuron_systematicType_query)['n.systematicType'].values.tolist()
+    neuron_systematicType_with_wildcard = get_wildcard(neuron_systematicType)
+    neuron_target = client.fetch_custom(neuron_target_query)['n.target'].values.tolist()
+    neuron_target_with_wildcard = get_wildcard(neuron_target)
     cell_body_fibers = client.fetch_custom(cell_body_fibers_query)['n.cellBodyFiber'].values.tolist()
-
+    
+    
     neuron_attributes = client.fetch_custom(neuron_attributes_query)
     allRois = fetch_all_rois(client=client)
 
@@ -86,8 +125,36 @@ async def fetch_node_fields(req: Request):
     for property, type in neuron_attributes.itertuples(index=False):
         if property == "type":
             node_fields[property] = parse_node_fields(property, type, neuron_types_with_wildcard)
+        elif property == "class":
+            node_fields[property] = parse_node_fields(property, type, neuron_classes_with_wildcard)
+        elif property == "birthtime":
+            node_fields[property] = parse_node_fields(property, type, neuron_birthtimes)
+        elif property == "n.somaSide":
+            node_fields[property] = parse_node_fields(property, type, neuron_somaSides)
+        elif property == "entryNerve":
+            node_fields[property] = parse_node_fields(property, type, neuron_entryNerve_with_wildcard)
+        elif property == "exitNerve":
+            node_fields[property] = parse_node_fields(property, type, neuron_exitNerve_with_wildcard)
+        elif property == "hemilineage":
+            node_fields[property] = parse_node_fields(property, type, neuron_hemilineage_with_wildcard)
+        elif property == "longTract":
+            node_fields[property] = parse_node_fields(property, type, neuron_longTract)
+        elif property == "modality":
+            node_fields[property] = parse_node_fields(property, type, neuron_modality)
+        elif property == "modality":
+            node_fields[property] = parse_node_fields(property, type, neuron_origin_with_wildcard)
         elif property == "cellBodyFiber":
             node_fields[property] = parse_node_fields(property, type, cell_body_fibers)
+        elif property == "predictedNt":
+            node_fields[property] = parse_node_fields(property, type, neuron_predictedNt)
+        elif property == "somaSide":
+            node_fields[property] = parse_node_fields(property, type, neuron_somaSide)
+        elif property == "subclass":
+            node_fields[property] = parse_node_fields(property, type, neuron_subclass_with_wildcard)
+        elif property == "systematicType":
+            node_fields[property] = parse_node_fields(property, type, neuron_systematicType_with_wildcard)
+        elif property == "target":
+            node_fields[property] = parse_node_fields(property, type, neuron_target_with_wildcard)
         else:
             if parse_node_fields(property, type):
                 node_fields[property] = parse_node_fields(property, type)

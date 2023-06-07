@@ -14,7 +14,7 @@ def nodes_and_edges_to_networkx(motif):
     return graph
 
 
-def nodes_and_edges_to_motif_string(motif, dataset, token):
+def nodes_and_edges_to_motif_string(motif, server, dataset, token):
     from neuprint import fetch_all_rois, Client
     """
     Converts Query Builder Mongo-esque parameters to dotmotif query format

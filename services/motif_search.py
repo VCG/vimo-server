@@ -30,7 +30,7 @@ def search_motif(data_server, data_version, auth_token, motif, lim):
     log.log_sketch(motif, lim)
 
     executor = NeuPrintExecutor(host=data_server, dataset=data_version, token=auth_token)
-    motif_source = nodes_and_edges_to_motif_string(motif, dataset=dataversion, token=auth_token)
+    motif_source = nodes_and_edges_to_motif_string(motif, data_server, dataset=data_version, token=auth_token)
     motif = Motif(enforce_inequality=True).from_motif(motif_source)
 
     cypher = executor.motif_to_cypher(motif=motif,
