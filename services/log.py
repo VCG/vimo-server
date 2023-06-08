@@ -1,6 +1,7 @@
-from google.cloud import firestore
 import time
 import os
+from google.auth.exceptions import DefaultCredentialsError
+from google.cloud import firestore
 
 db = None
 colletion = None
@@ -8,15 +9,17 @@ credentials_file = 'vimo-server-firestore-credentials.json'
 os.environ['GOOGLE_APPLICATION_CREDENTIALS']=credentials_file
 
 if os.environ.get('VIMO_LOGGING') == 'on':
-    db = firestore.Client()
-    collection = db.collection('sketches')
-    # print(collection)
+    print('*** motif logging enabled')
+    try:
+        db = firestore.Client()
+        collection = db.collection('sketches')
+    except DefaultCredentialsError:
+        raise Exception(f'*** Could not find credentials for logging in: {credentials_file}')
 
 def anonymize_properties(properties):
     if properties is None:
         return None
-    else:
-        return {key: 'hidden' for key in properties}
+    return {key: 'hidden' for key in properties}
 
 def anonymize_sketch(sketch):
     # print(sketch)
