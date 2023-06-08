@@ -1,28 +1,16 @@
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
+from google.cloud import firestore
 import time
 import os
-import sys
 
 db = None
 colletion = None
 credentials_file = 'vimo-server-firestore-credentials.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS']=credentials_file
 
 if os.environ.get('VIMO_LOGGING') == 'on':
-    if firebase_admin._apps:
-        db = firestore.client()
-    else:
-        # Initialize a new app if the app does not exist
-        try:
-            cred = credentials.Certificate(credentials_file)
-        except FileNotFoundError:
-            print("Could not find credentials file: %s".format(credentials_file))
-            sys.exit(1)
-        default_app = firebase_admin.initialize_app(cred)
-        db = firestore.client()
-
+    db = firestore.Client()
     collection = db.collection('sketches')
+    # print(collection)
 
 def anonymize_properties(properties):
     if properties is None:
