@@ -4,7 +4,7 @@ from google.auth.exceptions import DefaultCredentialsError
 from google.cloud import firestore
 
 db = None
-colletion = None
+collection = None
 credentials_file = 'vimo-server-firestore-credentials.json'
 os.environ['GOOGLE_APPLICATION_CREDENTIALS']=credentials_file
 
