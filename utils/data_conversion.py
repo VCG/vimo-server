@@ -14,18 +14,19 @@ def nodes_and_edges_to_networkx(motif):
     return graph
 
 
-def nodes_and_edges_to_motif_string(motif):
-    from neuprint import fetch_all_rois
+def nodes_and_edges_to_motif_string(motif, server, dataset, token):
+    from neuprint import fetch_all_rois, Client
     """
     Converts Query Builder Mongo-esque parameters to dotmotif query format
     """
 
+    client = Client(server, dataset=dataset, token=token)
     # print(motif)
     edges = motif['edges']
     nodes = motif['nodes']
     output = "\n "
 
-    rois = fetch_all_rois()
+    rois = fetch_all_rois(client=client)
     # First list every edge like A -> B [weight > x]
     for edge in edges:
         edge_str = edge['label']
@@ -108,7 +109,7 @@ def parse_node_fields(property, type, values=None):
                 "operators": ["equal"]
             }
     else:
-        if property == "type":
+        if property in ["type", "birthtime", "class", "someSide", "entryNerve", "exitNerve", "hemilineage", "longTract", "modality", "origin", "predictedNt", "serialMotif", "somaNeuromere", "somaSide", "subclass", "systematicType", "target"]:
             return {
                 "label": property,
                 "type": "select",
