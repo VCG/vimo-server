@@ -7,13 +7,17 @@ from fastapi import HTTPException
 from fastapi import Request
 from starlette.middleware.cors import CORSMiddleware
 
-from services import motif_search, motif_count
 
 from dotenv import load_dotenv
 
 from utils.data_conversion import parse_node_fields, parse_roi_fields, parse_edge_fields, get_wildcard
 
 load_dotenv()
+# have to load the dot env before importing the next line as the logging
+# code is looking for an possible value in the .env file in order to start
+# the logging.
+
+from services import motif_search, motif_count
 
 app = FastAPI()
 
